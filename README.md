@@ -4,7 +4,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/pyimaskill.svg)](https://pypi.org/project/pyimaskill/)
 [![License](https://img.shields.io/pypi/l/pyimaskill.svg)](https://github.com/AJayBBB/pyimaskill/blob/main/LICENSE)
 
-`pyimaskill` 是一个面向 **IMA OpenAPI** 的 Python **同步客户端**，支持个人笔记和知识库的常见操作。无需 `asyncio`，代码简单直接，非常适合 Python 初学者和国内开发者使用。
+`pyimaskill` 是一个面向 **IMA OpenAPI** 的 Python **同步客户端**，支持个人笔记和知识库的常见操作。
 
 ## 功能特性
 
