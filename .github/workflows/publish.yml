@@ -1,76 +1,45 @@
-name: Publish to PyPI
+name: Upload Python Package
 
 on:
   release:
     types: [published]
-  workflow_dispatch:  # 支持手动触发（调试时有用）
+
+permissions:
+  contents: read
 
 jobs:
-  # 先运行完整测试，确保发布质量
-  test:
-    uses: ./.github/workflows/ci.yml  # 复用上面的 CI 流程
-    secrets: inherit
-
-  # 发布到 TestPyPI（预验证）
-  publish-test:
-    needs: test  # 测试通过才能执行
+  release-build:
     runs-on: ubuntu-latest
-    environment:
-      name: testpypi  # 建议配置环境保护规则（Settings -> Environments）
-      url: https://test.pypi.org/project/pyimaskill/
-    
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-          cache: 'pip'
-
-      - name: Install build tools
-        run: pip install build
-
-      - name: Build package
-        run: python -m build
-
-      - name: Publish to TestPyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+          python-version: "3.x"
+      - name: Build release distributions
+        run: |
+          python -m pip install build
+          python -m build
+      - name: Upload distributions
+        uses: actions/upload-artifact@v4
         with:
-          repository-url: https://test.pypi.org/legacy/
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          name: release-dists
+          path: dist/
 
-  # 正式发布（依赖 TestPyPI 成功）
-  publish-pypi:
-    needs: publish-test  # 确保 TestPyPI 上传成功后才发布正式版
+  pypi-publish:
     runs-on: ubuntu-latest
+    needs:
+      - release-build
+    permissions:
+      id-token: write
     environment:
       name: pypi
-      url: https://pypi.org/project/pyimaskill/
-    
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Retrieve release distributions
+        uses: actions/download-artifact@v4
         with:
-          python-version: "3.11"
-          cache: 'pip'
-
-      - name: Install build tools
-        run: pip install build
-
-      - name: Build package
-        run: python -m build
-
-      - name: Publish to PyPI
+          name: release-dists
+          path: dist/
+      - name: Publish release distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
-          
-      - name: Upload artifacts to GitHub Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: dist/*
-          # 自动把 wheel/sdist 附加到 GitHub Release 页面
+          packages-dir: dist/
