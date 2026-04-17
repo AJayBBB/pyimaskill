@@ -3,14 +3,74 @@ name: Publish to PyPI
 on:
   release:
     types: [published]
+  workflow_dispatch:  # 支持手动触发（调试时有用）
 
 jobs:
-  publish:
+  # 先运行完整测试，确保发布质量
+  test:
+    uses: ./.github/workflows/ci.yml  # 复用上面的 CI 流程
+    secrets: inherit
+
+  # 发布到 TestPyPI（预验证）
+  publish-test:
+    needs: test  # 测试通过才能执行
     runs-on: ubuntu-latest
+    environment:
+      name: testpypi  # 建议配置环境保护规则（Settings -> Environments）
+      url: https://test.pypi.org/project/pyimaskill/
+    
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+
+      - name: Install build tools
+        run: pip install build
+
+      - name: Build package
+        run: python -m build
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+
+  # 正式发布（依赖 TestPyPI 成功）
+  publish-pypi:
+    needs: publish-test  # 确保 TestPyPI 上传成功后才发布正式版
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/pyimaskill/
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+
+      - name: Install build tools
+        run: pip install build
+
+      - name: Build package
+        run: python -m build
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
+          
+      - name: Upload artifacts to GitHub Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: dist/*
+          # 自动把 wheel/sdist 附加到 GitHub Release 页面
