@@ -10,7 +10,6 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
@@ -22,6 +21,9 @@ var/
 wheels/
 *.egg-info/
 *.egg
+
+# Compiled distributions are committed for direct PyPI upload
+# dist/ is kept for pre-built wheels/sdists to skip CI build step
 
 # Virtual environments
 .env
