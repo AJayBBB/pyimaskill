@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List, Optional, Union
 
 import requests
 
@@ -30,11 +30,11 @@ class ImaClient:
         self,
         client_id: str,
         api_key: str,
-        api_key_expires_at: str | datetime | None = None,
-        base_url: str | None = None,
-        timeout: float | None = None,
-        expiry_warning_window: int | None = None,
-        config: Config | None = None,
+        api_key_expires_at: Optional[Union[str, datetime]] = None,
+        base_url: Optional[str] = None,
+        timeout: Optional[float] = None,
+        expiry_warning_window: Optional[int] = None,
+        config: Optional[Config] = None,
     ) -> None:
         self._config = config or load_config(
             client_id=client_id,
@@ -52,10 +52,10 @@ class ImaClient:
         self.notes = NotesAPI(self)
         self.knowledge = KnowledgeAPI(self)
 
-    def validate_credentials(self) -> list[str]:
+    def validate_credentials(self) -> List[str]:
         return self._config.validate_credentials()
 
-    def request(self, path: str, body: dict[str, Any]) -> dict[str, Any]:
+    def request(self, path: str, body: Dict[str, Any]) -> Dict[str, Any]:
         resp = self._http.post(
             f"{self._base_url}/{path}",
             json=body,
@@ -63,8 +63,8 @@ class ImaClient:
         )
         resp.raise_for_status()
         payload = resp.json()
-        retcode = payload.get("retcode", -1)
-        errmsg = payload.get("errmsg", "Unknown error")
+        retcode = payload.get("code", payload.get("retcode", -1))
+        errmsg = payload.get("msg", payload.get("errmsg", "Unknown error"))
         raise_for_retcode(retcode, errmsg)
         return payload.get("data", {})
 

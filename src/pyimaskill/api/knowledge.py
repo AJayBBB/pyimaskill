@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
 
 import requests
 
@@ -48,14 +49,14 @@ class KnowledgeAPI:
         title: str,
         knowledge_base_id: str,
         *,
-        media_id: str | None = None,
-        folder_id: str | None = None,
-        file_info: dict | None = None,
-        web_info: dict | None = None,
-        note_info: dict | None = None,
-        session_info: dict | None = None,
+        media_id: Optional[str] = None,
+        folder_id: Optional[str] = None,
+        file_info: Optional[Dict[str, Any]] = None,
+        web_info: Optional[Dict[str, Any]] = None,
+        note_info: Optional[Dict[str, Any]] = None,
+        session_info: Optional[Dict[str, Any]] = None,
     ) -> AddKnowledgeResult:
-        body: dict = {
+        body: Dict[str, Any] = {
             "media_type": media_type,
             "title": title,
             "knowledge_base_id": knowledge_base_id,
@@ -75,7 +76,7 @@ class KnowledgeAPI:
         data = self._client.request(f"{self._base}/add_knowledge", body)
         return AddKnowledgeResult(**data)
 
-    def get_knowledge_base(self, ids: list[str]) -> GetKnowledgeBaseResult:
+    def get_knowledge_base(self, ids: List[str]) -> GetKnowledgeBaseResult:
         data = self._client.request(
             f"{self._base}/get_knowledge_base", {"ids": ids}
         )
@@ -86,9 +87,9 @@ class KnowledgeAPI:
         knowledge_base_id: str,
         cursor: str = "",
         limit: int = 20,
-        folder_id: str | None = None,
+        folder_id: Optional[str] = None,
     ) -> GetKnowledgeListResult:
-        body: dict = {
+        body: Dict[str, Any] = {
             "knowledge_base_id": knowledge_base_id,
             "cursor": cursor,
             "limit": limit,
@@ -140,10 +141,10 @@ class KnowledgeAPI:
     def check_repeated_names(
         self,
         knowledge_base_id: str,
-        params: list[dict],
-        folder_id: str | None = None,
+        params: List[Dict[str, Any]],
+        folder_id: Optional[str] = None,
     ) -> CheckRepeatedNamesResultWrapper:
-        body: dict = {
+        body: Dict[str, Any] = {
             "knowledge_base_id": knowledge_base_id,
             "params": params,
         }
@@ -155,10 +156,10 @@ class KnowledgeAPI:
     def import_urls(
         self,
         knowledge_base_id: str,
-        urls: list[str],
-        folder_id: str | None = None,
+        urls: List[str],
+        folder_id: Optional[str] = None,
     ) -> ImportURLsResult:
-        body: dict = {
+        body: Dict[str, Any] = {
             "knowledge_base_id": knowledge_base_id,
             "urls": urls,
         }
@@ -169,10 +170,10 @@ class KnowledgeAPI:
 
     def upload_file(
         self,
-        file_path: str | Path,
+        file_path: Union[str, Path],
         knowledge_base_id: str,
-        folder_id: str | None = None,
-        title: str | None = None,
+        folder_id: Optional[str] = None,
+        title: Optional[str] = None,
     ) -> AddKnowledgeResult:
         file_path = Path(file_path)
         file_name = file_path.name

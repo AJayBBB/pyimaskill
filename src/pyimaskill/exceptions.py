@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Dict, Type
+
 __all__ = [
     "ImaAuthError",
     "ImaError",
@@ -47,7 +49,7 @@ class ImaServerError(ImaError):
 
 
 # Error code mapping
-_ERROR_MAP: dict[int, type[ImaError]] = {
+_ERROR_MAP: Dict[int, Type[ImaError]] = {
     # Auth errors
     20004: ImaAuthError,
     100002: ImaAuthError,

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any, Dict, Optional
+
 from pyimaskill.models import ContentFormat, SearchType, SortType
 from pyimaskill.models.notes import ListFolderResult, ListNotesResult, SearchNoteResult
 
@@ -20,7 +22,7 @@ class NotesAPI:
         start: int = 0,
         end: int = 20,
     ) -> SearchNoteResult:
-        body: dict = {
+        body: Dict[str, Any] = {
             "search_type": int(search_type),
             "sort_type": int(sort_type),
             "start": start,
@@ -47,11 +49,11 @@ class NotesAPI:
         self,
         folder_id: str = "",
         *,
-        sort_type: SortType | None = None,
+        sort_type: Optional[SortType] = None,
         cursor: str = "",
         limit: int = 20,
     ) -> ListNotesResult:
-        body: dict = {"cursor": cursor, "limit": limit}
+        body: Dict[str, Any] = {"cursor": cursor, "limit": limit}
         if folder_id:
             body["folder_id"] = folder_id
         if sort_type is not None:
@@ -63,9 +65,9 @@ class NotesAPI:
         self,
         content: str,
         *,
-        folder_id: str | None = None,
+        folder_id: Optional[str] = None,
     ) -> str:
-        body: dict = {
+        body: Dict[str, Any] = {
             "content_format": int(ContentFormat.MARKDOWN),
             "content": content,
         }

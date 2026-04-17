@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Callable, Iterator, TypeVar
+from typing import Callable, Iterator, Optional, TypeVar
 
 T = TypeVar("T")
 
@@ -12,7 +12,7 @@ def paginate(
     *,
     cursor_key: str = "cursor",
     limit: int = 20,
-    max_pages: int | None = None,
+    max_pages: Optional[int] = None,
     **kwargs,
 ) -> Iterator[T]:
     """Sync pagination helper for cursor-based APIs.
@@ -79,7 +79,7 @@ class Paginator:
         """Check if all pages have been fetched."""
         return self._exhausted
 
-    def fetch_next(self) -> T | None:
+    def fetch_next(self) -> Optional[T]:
         """Fetch the next page.
 
         Returns:

@@ -2,17 +2,19 @@
 
 from __future__ import annotations
 
+from typing import Dict, List
+
 from pydantic import Field
 
 from pyimaskill.models.base import ImaModel
 
 
 class KnowledgeBaseInfo(ImaModel):
-    id: str = ""
-    name: str = ""
+    id: str = Field(default="", alias="kb_id")
+    name: str = Field(default="", alias="kb_name")
     cover_url: str = ""
     description: str = ""
-    recommended_questions: list[str] = Field(default_factory=list)
+    recommended_questions: List[str] = Field(default_factory=list)
 
 
 class KnowledgeInfo(ImaModel):
@@ -36,8 +38,8 @@ class AddableKnowledgeBaseInfo(ImaModel):
 
 
 class SearchedKnowledgeBaseInfo(ImaModel):
-    id: str = ""
-    name: str = ""
+    id: str = Field(default="", alias="kb_id")
+    name: str = Field(default="", alias="kb_name")
     cover_url: str = ""
 
 
@@ -95,37 +97,37 @@ class AddKnowledgeResult(ImaModel):
 
 
 class GetKnowledgeBaseResult(ImaModel):
-    infos: dict[str, KnowledgeBaseInfo] = Field(default_factory=dict)
+    infos: Dict[str, KnowledgeBaseInfo] = Field(default_factory=dict)
 
 
 class GetKnowledgeListResult(ImaModel):
-    knowledge_list: list[KnowledgeInfo] = Field(default_factory=list)
+    knowledge_list: List[KnowledgeInfo] = Field(default_factory=list)
     is_end: bool = True
     next_cursor: str = ""
-    current_path: list[FolderInfo] = Field(default_factory=list)
+    current_path: List[FolderInfo] = Field(default_factory=list)
 
 
 class SearchKnowledgeResult(ImaModel):
-    info_list: list[SearchedKnowledgeInfo] = Field(default_factory=list)
+    info_list: List[SearchedKnowledgeInfo] = Field(default_factory=list)
     is_end: bool = True
     next_cursor: str = ""
 
 
 class SearchKnowledgeBaseResult(ImaModel):
-    info_list: list[SearchedKnowledgeBaseInfo] = Field(default_factory=list)
+    info_list: List[SearchedKnowledgeBaseInfo] = Field(default_factory=list)
     is_end: bool = True
     next_cursor: str = ""
 
 
 class GetAddableKBListResult(ImaModel):
-    addable_knowledge_base_list: list[AddableKnowledgeBaseInfo] = Field(default_factory=list)
+    addable_knowledge_base_list: List[AddableKnowledgeBaseInfo] = Field(default_factory=list)
     next_cursor: str = ""
     is_end: bool = True
 
 
 class CheckRepeatedNamesResultWrapper(ImaModel):
-    results: list[CheckRepeatedNamesResult] = Field(default_factory=list)
+    results: List[CheckRepeatedNamesResult] = Field(default_factory=list)
 
 
 class ImportURLsResult(ImaModel):
-    results: dict[str, ImportURLData] = Field(default_factory=dict)
+    results: Dict[str, ImportURLData] = Field(default_factory=dict)

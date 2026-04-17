@@ -43,9 +43,9 @@ dev = [
 
 [project.urls]
 Homepage = "https://ima.qq.com"
-Repository = "https://github.com/AJay13/pyimaskill"
-Documentation = "https://github.com/AJay13/pyimaskill#readme"
-"Bug Tracker" = "https://github.com/AJay13/pyimaskill/issues"
+Repository = "https://github.com/AJayBBB/pyimaskill"
+Documentation = "https://github.com/AJayBBB/pyimaskill#readme"
+"Bug Tracker" = "https://github.com/AJayBBB/pyimaskill/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]

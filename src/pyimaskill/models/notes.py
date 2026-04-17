@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Dict, List
+
 from pydantic import Field
 
 from pyimaskill.models.base import FolderType, ImaModel
@@ -46,22 +48,22 @@ class NoteBookInfo(ImaModel):
 
 class SearchedDoc(ImaModel):
     doc: DocBasicInfo = Field(default_factory=DocBasicInfo)
-    highlight_info: dict[str, str] = Field(default_factory=dict)
+    highlight_info: Dict[str, str] = Field(default_factory=dict)
 
 
 class SearchNoteResult(ImaModel):
-    docs: list[SearchedDoc] = Field(default_factory=list)
+    docs: List[SearchedDoc] = Field(default_factory=list)
     is_end: bool = True
     total_hit_num: int = 0
 
 
 class ListFolderResult(ImaModel):
-    note_book_folders: list[NoteBookFolder] = Field(default_factory=list)
+    note_book_folders: List[NoteBookFolder] = Field(default_factory=list)
     next_cursor: str = ""
     is_end: bool = True
 
 
 class ListNotesResult(ImaModel):
-    note_book_list: list[NoteBookInfo] = Field(default_factory=list)
+    note_book_list: List[NoteBookInfo] = Field(default_factory=list)
     next_cursor: str = ""
     is_end: bool = True

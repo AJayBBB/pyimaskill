@@ -3,6 +3,8 @@ from __future__ import annotations
 import warnings
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from typing import Dict, List, Optional, Union
+
 __all__ = ["Config", "load_config"]
 
 _DEFAULT_BASE_URL = "https://ima.qq.com"
@@ -15,7 +17,7 @@ SKILL_VERSION = "1.1.3"
 class Config:
     client_id: str
     api_key: str
-    api_key_expires_at: datetime | None = None
+    api_key_expires_at: Optional[datetime] = None
     base_url: str = _DEFAULT_BASE_URL
     timeout: float = _DEFAULT_TIMEOUT
     expiry_warning_window: int = _DEFAULT_EXPIRY_WARNING_WINDOW
@@ -27,7 +29,7 @@ class Config:
         if self.expiry_warning_window < 0:
             raise ValueError("expiry_warning_window must be >= 0")
 
-    def build_headers(self) -> dict[str, str]:
+    def build_headers(self) -> Dict[str, str]:
         return {
             "Content-Type": "application/json",
             "ima-openapi-clientid": self.client_id,
@@ -35,9 +37,9 @@ class Config:
             "ima-openapi-ctx": f"skill_version={SKILL_VERSION}",
         }
 
-    def validate_credentials(self, *, now: datetime | None = None) -> list[str]:
+    def validate_credentials(self, *, now: Optional[datetime] = None) -> List[str]:
         current_time = now or datetime.now(timezone.utc)
-        warnings_list: list[str] = []
+        warnings_list: List[str] = []
 
         if self.api_key_expires_at and current_time >= self.api_key_expires_at:
             raise ValueError(
@@ -61,9 +63,9 @@ class Config:
     def _build_expiry_warning(
         self,
         *,
-        expires_at: datetime | None,
+        expires_at: Optional[datetime],
         now: datetime,
-    ) -> str | None:
+    ) -> Optional[str]:
         if expires_at is None:
             return None
 
@@ -74,13 +76,13 @@ class Config:
         return f"api_key expires in {int(remaining / 3600)} hours"
 
     @staticmethod
-    def _format_dt(value: datetime | None) -> str:
+    def _format_dt(value: Optional[datetime]) -> str:
         if value is None:
             return "unknown"
         return value.astimezone(timezone.utc).isoformat()
 
 
-def _parse_datetime(value: str | datetime | None) -> datetime | None:
+def _parse_datetime(value: Optional[Union[str, datetime]]) -> Optional[datetime]:
     if isinstance(value, datetime):
         return value
     if not value:
@@ -110,10 +112,10 @@ def _parse_datetime(value: str | datetime | None) -> datetime | None:
 def load_config(
     client_id: str,
     api_key: str,
-    api_key_expires_at: str | datetime | None = None,
-    base_url: str | None = None,
-    timeout: float | None = None,
-    expiry_warning_window: int | None = None,
+    api_key_expires_at: Optional[Union[str, datetime]] = None,
+    base_url: Optional[str] = None,
+    timeout: Optional[float] = None,
+    expiry_warning_window: Optional[int] = None,
 ) -> Config:
     parsed_api_key_expires = _parse_datetime(api_key_expires_at)
 

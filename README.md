@@ -1,9 +1,9 @@
 # pyimaskill
 
-[![CI](https://github.com/AJay13/pyimaskill/actions/workflows/ci.yml/badge.svg)](https://github.com/AJay13/pyimaskill/actions/workflows/ci.yml)
+[![CI](https://github.com/AJayBBB/pyimaskill/actions/workflows/ci.yml/badge.svg)](https://github.com/AJayBBB/pyimaskill/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/pyimaskill.svg)](https://pypi.org/project/pyimaskill/)
 [![Python](https://img.shields.io/pypi/pyversions/pyimaskill.svg)](https://pypi.org/project/pyimaskill/)
-[![License](https://img.shields.io/pypi/l/pyimaskill.svg)](https://github.com/AJay13/pyimaskill/blob/main/LICENSE)
+[![License](https://img.shields.io/pypi/l/pyimaskill.svg)](https://github.com/AJayBBB/pyimaskill/blob/main/LICENSE)
 
 [中文说明](#中文说明) | [English](#english)
 
@@ -28,7 +28,7 @@ pip install pyimaskill
 开发环境：
 
 ```bash
-git clone https://github.com/AJay13/pyimaskill.git
+git clone https://github.com/AJayBBB/pyimaskill.git
 cd pyimaskill
 pip install -e ".[dev]"
 ```
@@ -97,7 +97,7 @@ pip install pyimaskill
 For development:
 
 ```bash
-git clone https://github.com/AJay13/pyimaskill.git
+git clone https://github.com/AJayBBB/pyimaskill.git
 cd pyimaskill
 pip install -e ".[dev]"
 ```

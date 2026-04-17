@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import codecs
-from typing import Callable
+from typing import Callable, Optional, TypeVar
+
+T = TypeVar("T")
 
 
 def ensure_utf8(text: str) -> str:
@@ -58,7 +60,7 @@ def detect_encoding(data: bytes) -> str:
     raise ValueError("Unable to detect encoding")
 
 
-def convert_to_utf8(data: bytes, source_encoding: str | None = None) -> str:
+def convert_to_utf8(data: bytes, source_encoding: Optional[str] = None) -> str:
     """Convert bytes to UTF-8 string.
 
     Args:
