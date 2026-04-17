@@ -1,25 +1,20 @@
 # pyimaskill
 
-[![CI](https://github.com/AJayBBB/pyimaskill/actions/workflows/ci.yml/badge.svg)](https://github.com/AJayBBB/pyimaskill/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/pyimaskill.svg)](https://pypi.org/project/pyimaskill/)
 [![Python](https://img.shields.io/pypi/pyversions/pyimaskill.svg)](https://pypi.org/project/pyimaskill/)
 [![License](https://img.shields.io/pypi/l/pyimaskill.svg)](https://github.com/AJayBBB/pyimaskill/blob/main/LICENSE)
 
-[中文说明](#中文说明) | [English](#english)
-
-## 中文说明
-
 `pyimaskill` 是一个面向 **IMA OpenAPI** 的 Python **同步客户端**，支持个人笔记和知识库的常见操作。无需 `asyncio`，代码简单直接，非常适合 Python 初学者和国内开发者使用。
 
-### 功能
+## 功能特性
 
-- **笔记**：搜索、列出笔记本、列出笔记、新建、追加、读取
-- **知识库**：搜索、浏览、导入网页、上传文件
+- **笔记管理**：搜索、列出笔记本、列出笔记、新建、追加、读取
+- **知识库管理**：搜索、浏览、导入网页、上传文件
 - **类型安全**：基于 Pydantic 模型自动解析响应
 - **同步设计**：基于 `requests.Session`，无需 `async/await`
 - **凭证友好提示**：支持 `api_key` 过期时间校验（有效期一个月）
 
-### 安装
+## 安装
 
 ```bash
 pip install pyimaskill
@@ -33,14 +28,27 @@ cd pyimaskill
 pip install -e ".[dev]"
 ```
 
-### 认证方式
+## 快速开始
 
-`pyimaskill` 使用 `client_id + api_key` 方式认证，通过 `ImaClient` 初始化时传入：
+### 1. 获取凭证
 
-- `client_id`：从 [ima.qq.com/agent-interface](https://ima.qq.com/agent-interface) 获取
-- `api_key`：从 [ima.qq.com/agent-interface](https://ima.qq.com/agent-interface) 获取，**支持一个月有效期**
+前往 [ima.qq.com/agent-interface](https://ima.qq.com/agent-interface) 获取：
 
-### 快速开始
+- `client_id`：客户端 ID
+- `api_key`：API 密钥（**支持一个月有效期**）
+
+### 2. 初始化客户端
+
+```python
+from pyimaskill import ImaClient
+
+client = ImaClient(
+    client_id="your-client-id",
+    api_key="your-api-key",
+)
+```
+
+### 3. 笔记操作示例
 
 ```python
 from pyimaskill import ImaClient
@@ -55,10 +63,43 @@ with ImaClient(client_id="your-client-id", api_key="your-api-key") as client:
     doc_id = client.notes.import_doc(
         content="# 示例笔记\n\n这里是 Markdown 正文。",
     )
-    print("created:", doc_id)
+    print("创建成功:", doc_id)
 ```
 
-### 可选参数
+### 4. 知识库操作示例
+
+```python
+from pyimaskill import ImaClient
+
+client = ImaClient(client_id="your-client-id", api_key="your-api-key")
+
+# 获取知识库列表
+kb_result = client.knowledge.search_knowledge_base(query="", cursor="", limit=20)
+
+if not kb_result.info_list:
+    print("您还没有创建任何知识库，请先创建知识库后再试。")
+else:
+    print(f"找到 {len(kb_result.info_list)} 个知识库：")
+    for idx, kb in enumerate(kb_result.info_list, 1):
+        print(f"  {idx}. {kb.name} (ID: {kb.id})")
+
+# 导入微信公众号文章到知识库
+kb_id = "your-knowledge-base-id"
+article_url = "https://mp.weixin.qq.com/s/xxxxx"
+
+import_result = client.knowledge.import_urls(
+    knowledge_base_id=kb_id,
+    urls=[article_url],
+)
+
+url_result = import_result.results.get(article_url)
+if url_result and url_result.ret_code == 0:
+    print(f"添加成功！媒体ID: {url_result.media_id}")
+else:
+    print(f"添加失败: {url_result.errmsg if url_result else '未知错误'}")
+```
+
+## 可选参数
 
 ```python
 client = ImaClient(
@@ -70,69 +111,12 @@ client = ImaClient(
 )
 ```
 
-### 文档
+## 文档
 
 - [详细中文使用说明](docs/使用说明.md)
 - [API 文档](docs/api.md)
 - [更新日志](CHANGELOG.md)
 
-## English
+## 许可证
 
-`pyimaskill` is a **synchronous** Python client for **IMA OpenAPI**. It covers common note and knowledge-base workflows and adds lifecycle hints for `api_key`. No `asyncio` required.
-
-### Features
-
-- Notes: search, list folders, list notes, create, append, read
-- Knowledge bases: search, browse, import URLs, upload files
-- Typed response models powered by Pydantic
-- Sync-first implementation on top of `requests.Session`
-- Credential lifecycle checks for `api_key` (one-month validity)
-
-### Install
-
-```bash
-pip install pyimaskill
-```
-
-For development:
-
-```bash
-git clone https://github.com/AJayBBB/pyimaskill.git
-cd pyimaskill
-pip install -e ".[dev]"
-```
-
-### Authentication
-
-`pyimaskill` uses `client_id + api_key` authentication via class initialization:
-
-- `client_id`: Get from [ima.qq.com/agent-interface](https://ima.qq.com/agent-interface)
-- `api_key`: Get from [ima.qq.com/agent-interface](https://ima.qq.com/agent-interface), **supports one-month validity**
-
-### Quick Start
-
-```python
-from pyimaskill import ImaClient
-
-with ImaClient(client_id="your-client-id", api_key="your-api-key") as client:
-    notes = client.notes.search(query="release")
-    print(notes.total_hit_num)
-```
-
-### Optional Parameters
-
-```python
-client = ImaClient(
-    client_id="your-client-id",
-    api_key="your-api-key",
-    api_key_expires_at="2026-05-06T08:00:00+08:00",  # optional, for expiry warnings
-    base_url="https://ima.qq.com",  # optional, default
-    timeout=30.0,  # optional, default
-)
-```
-
-### Docs
-
-- [Chinese Usage Guide](docs/使用说明.md)
-- [API Reference](docs/api.md)
-- [Changelog](CHANGELOG.md)
+MIT License
