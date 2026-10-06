@@ -3,15 +3,15 @@ from pyimaskill import ImaClient
 
 with ImaClient() as client:
     results = client.notes.search(query="Python", start=0, end=20)
-    for note in results.docs:
-        print(f"- {note.doc.basic_info.title}")
+    for note in results.search_note_infos:
+        print(f"- {note.note_book_info.title}")
 
-    doc_id = client.notes.import_doc(
+    note_id = client.notes.import_doc(
         content="# My Note\n\nThis is a markdown note.",
     )
-    print(f"Created note: {doc_id}")
+    print(f"Created note: {note_id}")
 
-    content = client.notes.get_content(doc_id)
+    content = client.notes.get_content(note_id)
     print(content)
 
     kb_list = client.knowledge.search_knowledge_base(query="")

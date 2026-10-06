@@ -14,6 +14,7 @@ from pyimaskill.models.knowledge import (
     GetAddableKBListResult,
     GetKnowledgeBaseResult,
     GetKnowledgeListResult,
+    GetMediaInfoResult,
     ImportURLsResult,
     SearchKnowledgeBaseResult,
     SearchKnowledgeResult,
@@ -75,6 +76,12 @@ class KnowledgeAPI:
             body["session_info"] = session_info
         data = self._client.request(f"{self._base}/add_knowledge", body)
         return AddKnowledgeResult(**data)
+
+    def get_media_info(self, media_id: str) -> GetMediaInfoResult:
+        data = self._client.request(
+            f"{self._base}/get_media_info", {"media_id": media_id}
+        )
+        return GetMediaInfoResult(**data)
 
     def get_knowledge_base(self, ids: List[str]) -> GetKnowledgeBaseResult:
         data = self._client.request(

@@ -1,5 +1,3 @@
-"""Custom exceptions for IMA OpenAPI errors."""
-
 from __future__ import annotations
 
 from typing import Dict, Type
@@ -16,60 +14,61 @@ __all__ = [
 
 
 class ImaError(Exception):
-    """Base exception for all IMA API errors."""
-
-    def __init__(self, retcode: int, errmsg: str) -> None:
-        self.retcode = retcode
-        self.errmsg = errmsg
-        super().__init__(f"[{retcode}] {errmsg}")
+    def __init__(self, code: int, msg: str) -> None:
+        self.code = code
+        self.msg = msg
+        super().__init__(f"[{code}] {msg}")
 
 
 class ImaAuthError(ImaError):
-    """Authentication failed — invalid or expired credentials."""
+    pass
 
 
 class ImaNotFoundError(ImaError):
-    """Resource not found — note deleted, notebook doesn't exist, etc."""
+    pass
 
 
 class ImaRateLimitError(ImaError):
-    """Rate limit exceeded — API key frequency limit reached."""
+    pass
 
 
 class ImaPermissionError(ImaError):
-    """Permission denied — not the note author or no access."""
+    pass
 
 
 class ImaValidationError(ImaError):
-    """Validation error — invalid parameters or size limits."""
+    pass
 
 
 class ImaServerError(ImaError):
-    """Server error — internal server error or downstream failure."""
+    pass
 
 
-# Error code mapping
 _ERROR_MAP: Dict[int, Type[ImaError]] = {
-    # Auth errors
     20004: ImaAuthError,
-    100002: ImaAuthError,
-    # Not found
-    100006: ImaNotFoundError,
-    310001: ImaNotFoundError,
-    # Rate limit
+    210002: ImaAuthError,
+    210006: ImaNotFoundError,
+    210035: ImaNotFoundError,
+    210012: ImaNotFoundError,
     20002: ImaRateLimitError,
     110021: ImaRateLimitError,
-    # Permission
-    100005: ImaPermissionError,
+    210005: ImaPermissionError,
+    210034: ImaPermissionError,
+    210011: ImaPermissionError,
     110030: ImaPermissionError,
-    # Validation
-    100001: ImaValidationError,
-    100004: ImaValidationError,
-    100009: ImaValidationError,
+    210001: ImaValidationError,
+    210004: ImaValidationError,
+    210009: ImaValidationError,
+    210030: ImaValidationError,
+    210031: ImaValidationError,
     110001: ImaValidationError,
     110002: ImaValidationError,
-    # Server errors
-    100003: ImaServerError,
+    210003: ImaServerError,
+    210007: ImaServerError,
+    210008: ImaServerError,
+    210032: ImaServerError,
+    210033: ImaServerError,
+    210036: ImaServerError,
     110010: ImaServerError,
     110011: ImaServerError,
     110012: ImaServerError,
@@ -78,17 +77,8 @@ _ERROR_MAP: Dict[int, Type[ImaError]] = {
 }
 
 
-def raise_for_retcode(retcode: int, errmsg: str) -> None:
-    """Raise appropriate exception based on retcode.
-
-    Args:
-        retcode: API return code (0 = success).
-        errmsg: Error message from API.
-
-    Raises:
-        ImaError: Subclass matching the error code.
-    """
-    if retcode == 0:
+def raise_for_retcode(code: int, msg: str) -> None:
+    if code == 0:
         return
-    exc_class = _ERROR_MAP.get(retcode, ImaError)
-    raise exc_class(retcode, errmsg)
+    exc_class = _ERROR_MAP.get(code, ImaError)
+    raise exc_class(code, msg)

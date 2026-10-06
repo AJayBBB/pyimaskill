@@ -75,6 +75,7 @@ class ImportURLData(ImaModel):
     url: str = ""
     ret_code: int = 0
     media_id: str = ""
+    errmsg: str = ""
 
 
 class CheckRepeatedNamesParam(ImaModel):
@@ -127,6 +128,21 @@ class GetAddableKBListResult(ImaModel):
 
 class CheckRepeatedNamesResultWrapper(ImaModel):
     results: List[CheckRepeatedNamesResult] = Field(default_factory=list)
+
+
+class URLInfo(ImaModel):
+    url: str = ""
+    headers: Dict[str, str] = Field(default_factory=dict)
+
+
+class NotebookExtInfo(ImaModel):
+    notebook_id: str = ""
+
+
+class GetMediaInfoResult(ImaModel):
+    media_type: int = 0
+    url_info: Optional[URLInfo] = None
+    notebook_ext_info: Optional[NotebookExtInfo] = None
 
 
 class ImportURLsResult(ImaModel):

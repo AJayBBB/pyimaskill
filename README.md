@@ -60,10 +60,10 @@ with ImaClient(client_id="your-client-id", api_key="your-api-key") as client:
         print(note.doc.basic_info.title)
 
     # 新建笔记
-    doc_id = client.notes.import_doc(
+    note_id = client.notes.import_doc(
         content="# 示例笔记\n\n这里是 Markdown 正文。",
     )
-    print("创建成功:", doc_id)
+    print("创建成功:", note_id)
 ```
 
 ### 4. 知识库操作示例

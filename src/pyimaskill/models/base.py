@@ -30,9 +30,9 @@ class SortType(IntEnum):
 
 
 class FolderType(IntEnum):
-    USER_CREATED = 0
-    ALL_NOTES = 1
-    UNCATEGORIZED = 2
+    USER_CREATE = 0
+    TOTAL = 1
+    UN_CATEGORIZED = 2
 
 
 class MediaType(IntEnum):

@@ -1,5 +1,3 @@
-"""Notes API wrapper — all 6 note endpoints."""
-
 from __future__ import annotations
 
 from typing import Any, Dict, Optional
@@ -31,7 +29,7 @@ class NotesAPI:
         if query:
             key = "title" if search_type == SearchType.TITLE else "content"
             body["query_info"] = {key: query}
-        data = self._client.request(f"{self._base}/search_note_book", body)
+        data = self._client.request(f"{self._base}/search_note", body)
         return SearchNoteResult(**data)
 
     def list_folders(
@@ -66,6 +64,7 @@ class NotesAPI:
         content: str,
         *,
         folder_id: Optional[str] = None,
+        folder_name: Optional[str] = None,
     ) -> str:
         body: Dict[str, Any] = {
             "content_format": int(ContentFormat.MARKDOWN),
@@ -73,21 +72,23 @@ class NotesAPI:
         }
         if folder_id is not None:
             body["folder_id"] = folder_id
+        if folder_name is not None:
+            body["folder_name"] = folder_name
         data = self._client.request(f"{self._base}/import_doc", body)
-        return data["doc_id"]
+        return data["note_id"]
 
-    def append_doc(self, doc_id: str, content: str) -> str:
+    def append_doc(self, note_id: str, content: str) -> str:
         body = {
-            "doc_id": doc_id,
+            "note_id": note_id,
             "content_format": int(ContentFormat.MARKDOWN),
             "content": content,
         }
         data = self._client.request(f"{self._base}/append_doc", body)
-        return data["doc_id"]
+        return data["note_id"]
 
-    def get_content(self, doc_id: str) -> str:
+    def get_content(self, note_id: str) -> str:
         data = self._client.request(
             f"{self._base}/get_doc_content",
-            {"doc_id": doc_id, "target_content_format": 0},
+            {"note_id": note_id, "target_content_format": 0},
         )
         return data["content"]

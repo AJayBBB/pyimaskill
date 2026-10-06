@@ -19,13 +19,13 @@ def test_raise_for_retcode_success():
 def test_raise_for_retcode_auth_error():
     with pytest.raises(ImaAuthError) as exc_info:
         raise_for_retcode(20004, "鉴权失败")
-    assert exc_info.value.retcode == 20004
-    assert exc_info.value.errmsg == "鉴权失败"
+    assert exc_info.value.code == 20004
+    assert exc_info.value.msg == "鉴权失败"
 
 
 def test_raise_for_retcode_not_found():
     with pytest.raises(ImaNotFoundError):
-        raise_for_retcode(100006, "笔记已删除")
+        raise_for_retcode(210006, "笔记已删除")
 
 
 def test_raise_for_retcode_rate_limit():
@@ -35,20 +35,20 @@ def test_raise_for_retcode_rate_limit():
 
 def test_raise_for_retcode_permission():
     with pytest.raises(ImaPermissionError):
-        raise_for_retcode(100005, "不是笔记的作者")
+        raise_for_retcode(210005, "不是笔记的作者")
 
 
 def test_raise_for_retcode_validation():
     with pytest.raises(ImaValidationError):
-        raise_for_retcode(100001, "参数错误")
+        raise_for_retcode(210001, "参数错误")
 
 
 def test_raise_for_retcode_server():
     with pytest.raises(ImaServerError):
-        raise_for_retcode(100003, "服务器内部错误")
+        raise_for_retcode(210003, "服务器内部错误")
 
 
 def test_raise_for_retcode_unknown():
     with pytest.raises(ImaError) as exc_info:
         raise_for_retcode(999999, "未知错误")
-    assert exc_info.value.retcode == 999999
+    assert exc_info.value.code == 999999

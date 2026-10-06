@@ -8,21 +8,19 @@ from pyimaskill.exceptions import ImaError
 @responses.activate
 def test_search_notes():
     responses.post(
-        "https://ima.qq.com/openapi/note/v1/search_note_book",
+        "https://ima.qq.com/openapi/note/v1/search_note",
         json={
-            "retcode": 0,
-            "errmsg": "成功",
+            "code": 0,
+            "msg": "成功",
             "data": {
-                "docs": [
+                "search_note_infos": [
                     {
-                        "doc": {
-                            "basic_info": {
-                                "docid": "doc_1",
-                                "title": "Test Note",
-                                "summary": "A test note",
-                            }
+                        "note_book_info": {
+                            "note_id": "note_1",
+                            "title": "Test Note",
+                            "summary": "A test note",
                         },
-                        "highlight_info": {},
+                        "highlightInfo": {},
                     }
                 ],
                 "is_end": True,
@@ -33,8 +31,8 @@ def test_search_notes():
 
     with ImaClient(client_id="test_id", api_key="test_key") as client:
         result = client.notes.search(query="Test")
-        assert len(result.docs) == 1
-        assert result.docs[0].doc.basic_info.docid == "doc_1"
+        assert len(result.search_note_infos) == 1
+        assert result.search_note_infos[0].note_book_info.note_id == "note_1"
 
 
 @responses.activate
@@ -42,24 +40,24 @@ def test_import_doc():
     responses.post(
         "https://ima.qq.com/openapi/note/v1/import_doc",
         json={
-            "retcode": 0,
-            "errmsg": "成功",
-            "data": {"doc_id": "new_doc_123"},
+            "code": 0,
+            "msg": "成功",
+            "data": {"note_id": "new_note_123"},
         },
     )
 
     with ImaClient(client_id="test_id", api_key="test_key") as client:
-        doc_id = client.notes.import_doc(content="# Test\n\nContent")
-        assert doc_id == "new_doc_123"
+        note_id = client.notes.import_doc(content="# Test\n\nContent")
+        assert note_id == "new_note_123"
 
 
 @responses.activate
 def test_error_handling():
     responses.post(
-        "https://ima.qq.com/openapi/note/v1/search_note_book",
+        "https://ima.qq.com/openapi/note/v1/search_note",
         json={
-            "retcode": 100001,
-            "errmsg": "参数错误",
+            "code": 210001,
+            "msg": "参数错误",
             "data": {},
         },
     )
@@ -67,7 +65,7 @@ def test_error_handling():
     with ImaClient(client_id="test_id", api_key="test_key") as client:
         with pytest.raises(ImaError) as exc_info:
             client.notes.search(query="Test")
-        assert exc_info.value.retcode == 100001
+        assert exc_info.value.code == 210001
 
 
 @responses.activate
@@ -75,8 +73,8 @@ def test_search_knowledge_base():
     responses.post(
         "https://ima.qq.com/openapi/wiki/v1/search_knowledge_base",
         json={
-            "retcode": 0,
-            "errmsg": "成功",
+            "code": 0,
+            "msg": "成功",
             "data": {
                 "info_list": [
                     {"id": "kb_1", "name": "Test KB", "cover_url": ""}
@@ -98,8 +96,8 @@ def test_import_urls():
     responses.post(
         "https://ima.qq.com/openapi/wiki/v1/import_urls",
         json={
-            "retcode": 0,
-            "errmsg": "成功",
+            "code": 0,
+            "msg": "成功",
             "data": {
                 "results": {
                     "https://example.com": {

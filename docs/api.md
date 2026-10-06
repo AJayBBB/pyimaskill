@@ -10,11 +10,11 @@ Initialize `ImaClient` with required `client_id` and `api_key`:
 from pyimaskill import ImaClient
 
 client = ImaClient(
-    client_id="your-client-id",  # required
-    api_key="your-api-key",      # required
-    api_key_expires_at="2026-05-06T08:00:00+08:00",  # optional, for expiry warnings
-    base_url="https://ima.qq.com",  # optional, default
-    timeout=30.0,  # optional, default
+    client_id="your-client-id",
+    api_key="your-api-key",
+    api_key_expires_at="2026-05-06T08:00:00+08:00",
+    base_url="https://ima.qq.com",
+    timeout=30.0,
 )
 ```
 
@@ -25,21 +25,21 @@ client = ImaClient(
 ```python
 result = client.notes.search(
     query="Python",
-    search_type=SearchType.TITLE,  # 0=title, 1=content
-    sort_type=SortType.MODIFY_TIME,  # 0=modify, 1=create, 2=title, 3=size
+    search_type=SearchType.TITLE,
+    sort_type=SortType.MODIFY_TIME,
     start=0,
     end=20,
 )
-for doc in result.docs:
-    print(doc.doc.basic_info.title)
+for note in result.search_note_infos:
+    print(note.note_book_info.title)
 ```
 
 ### List Folders
 
 ```python
 result = client.notes.list_folders(cursor="0", limit=20)
-for folder in result.note_book_folders:
-    print(folder.folder.basic_info.name)
+for folder in result.note_folder_infos:
+    print(folder.name)
 ```
 
 ### List Notes in Folder
@@ -47,28 +47,28 @@ for folder in result.note_book_folders:
 ```python
 result = client.notes.list_notes(
     folder_id="folder_123",
-    sort_type=SortType.MODIFY_TIME,  # 0=modify_time (default), 1=create_time, 2=title, 3=size
+    sort_type=SortType.MODIFY_TIME,
     cursor="",
     limit=20,
 )
 for note in result.note_book_list:
-    print(note.basic_info.title)
+    print(note.title)
 ```
 
 ### Create Note
 
 ```python
-doc_id = client.notes.import_doc(
+note_id = client.notes.import_doc(
     content="# Title\n\nMarkdown content here.",
-    folder_id="folder_123",  # optional
+    folder_id="folder_123",
 )
 ```
 
 ### Append to Note
 
 ```python
-doc_id = client.notes.append_doc(
-    doc_id="doc_123",
+note_id = client.notes.append_doc(
+    note_id="note_123",
     content="\n\nAdditional content.",
 )
 ```
@@ -76,7 +76,7 @@ doc_id = client.notes.append_doc(
 ### Get Note Content
 
 ```python
-content = client.notes.get_content(doc_id="doc_123")
+content = client.notes.get_content(note_id="note_123")
 ```
 
 ## Knowledge API
@@ -94,7 +94,7 @@ for kb_id, info in result.infos.items():
 ```python
 result = client.knowledge.get_knowledge_list(
     knowledge_base_id="kb_123",
-    folder_id="folder_456",  # optional
+    folder_id="folder_456",
     cursor="",
     limit=20,
 )
@@ -145,7 +145,7 @@ result = client.knowledge.check_repeated_names(
     params=[
         {"name": "report.pdf", "media_type": 1},
     ],
-    folder_id="folder_456",  # optional
+    folder_id="folder_456",
 )
 for r in result.results:
     print(f"{r.name}: {'repeated' if r.is_repeated else 'available'}")
@@ -157,10 +157,20 @@ for r in result.results:
 result = client.knowledge.import_urls(
     knowledge_base_id="kb_123",
     urls=["https://example.com/article"],
-    folder_id="folder_456",  # optional
+    folder_id="folder_456",
 )
 for url, data in result.results.items():
     print(f"{url}: media_id={data.media_id}, ret_code={data.ret_code}")
+```
+
+### Get Media Info
+
+```python
+result = client.knowledge.get_media_info(media_id="media_123")
+if result.url_info:
+    print(f"URL: {result.url_info.url}")
+elif result.notebook_ext_info:
+    print(f"Notebook ID: {result.notebook_ext_info.notebook_id}")
 ```
 
 ### Upload File
@@ -169,8 +179,8 @@ for url, data in result.results.items():
 result = client.knowledge.upload_file(
     file_path="/path/to/document.pdf",
     knowledge_base_id="kb_123",
-    folder_id="folder_456",  # optional
-    title="My Document",  # optional, defaults to filename
+    folder_id="folder_456",
+    title="My Document",
 )
 print(f"Uploaded: {result.media_id}")
 ```
@@ -182,7 +192,7 @@ print(f"Uploaded: {result.media_id}")
 | `SearchType` | `TITLE = 0`, `CONTENT = 1` |
 | `SortType` | `MODIFY_TIME = 0`, `CREATE_TIME = 1`, `TITLE = 2`, `SIZE = 3` |
 | `ContentFormat` | `PLAINTEXT = 0`, `MARKDOWN = 1`, `JSON = 2` |
-| `FolderType` | `USER_CREATED = 0`, `ALL_NOTES = 1`, `UNCATEGORIZED = 2` |
+| `FolderType` | `USER_CREATE = 0`, `TOTAL = 1`, `UN_CATEGORIZED = 2` |
 | `MediaType` | `PDF = 1`, `WEBPAGE = 2`, `WORD = 3`, `PPT = 4`, `EXCEL = 5`, `WECHAT = 6`, `MARKDOWN = 7`, `IMAGE = 9`, `NOTE = 11`, `AI_SESSION = 12`, `TXT = 13`, `XMIND = 14`, `AUDIO = 15`, `VIDEO = 16` |
 
 ## Pagination
@@ -195,8 +205,8 @@ for result in paginate(
     cursor_key="cursor",
     limit=20,
 ):
-    for folder in result.note_book_folders:
-        print(folder.folder.basic_info.name)
+    for folder in result.note_folder_infos:
+        print(folder.name)
 ```
 
 ## UTF-8 Validation
@@ -222,11 +232,11 @@ from pyimaskill.exceptions import (
 try:
     client.notes.search(query="test")
 except ImaAuthError as e:
-    print(f"Auth failed: {e.errmsg}")
+    print(f"Auth failed: {e.msg}")
 except ImaNotFoundError as e:
-    print(f"Not found: {e.errmsg}")
+    print(f"Not found: {e.msg}")
 except ImaRateLimitError as e:
-    print(f"Rate limited: {e.errmsg}")
+    print(f"Rate limited: {e.msg}")
 except ImaError as e:
-    print(f"API error [{e.retcode}]: {e.errmsg}")
+    print(f"API error [{e.code}]: {e.msg}")
 ```
