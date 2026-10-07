@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyimaskill"
-version = "0.0.3"
+version = "0.0.5"
 description = "pyimaskill是一个面向 IMA OpenAPI的Python同步客户端，支持个人笔记和知识库的常见操作。"
 readme = "README.md"
 license = {text = "MIT"}

@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.0.5 (2026-10-07)
+
+### Notes
+
+- 验证 GitHub Actions 打标签自动发布 PyPI 流程。
+
+## 0.0.4 (2026-10-07)
+
+### Fixes
+
+- 统一包版本号（`pyproject.toml` 与 `pyimaskill.__version__`）。
+- 同步 ima-skill 主仓库的最新端点与模型修复。
+
 ## 1.1.3 (2025-04-17)
 
 ### Features
