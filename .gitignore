@@ -22,8 +22,10 @@ wheels/
 *.egg-info/
 *.egg
 
-# Compiled distributions are committed for direct PyPI upload
-# dist/ is kept for pre-built wheels/sdists to skip CI build step
+# Compiled distributions
+# dist/ is built fresh by CI (python -m build); never commit stale artifacts —
+# old files left in dist/ get uploaded together with new ones and PyPI rejects them.
+dist/
 
 # Virtual environments
 .env
